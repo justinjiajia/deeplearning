@@ -67,7 +67,7 @@ def scaled_dot_product_attention_test(target):
                                    [0.7227253,  0.16817567],
                                    [0.6637989,  0.2039163 ]])
 
-    mask = np.array([[[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]]])
+    mask = np.array([[[1, 1, 0, 1], [1, 1, 0, 1], [1, 1, 0, 1]]])
     attention, weights = target(q, k, v, mask)
 
     assert np.allclose(weights, [[0.30719590187072754, 0.5064803957939148, 0.0, 0.18632373213768005],
