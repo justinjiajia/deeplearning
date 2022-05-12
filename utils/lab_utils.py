@@ -84,8 +84,9 @@ def file_tree(dir_path: Path, level: int=-1, limit_to_directories: bool=False,
 def visualize_raw_images(folder, nrow=2, ncol=4):
   
   nimg = nrow * ncol
-  subfolder_names = os.listdir(folder)
-  for name in subfolder_names:
+  subfolder_names = sorted(os.listdir(folder))
+  for i, name in enumerate(subfolder_names):
+    if i == 5: break
     subfolder_path = os.path.join(folder, name)
     img_paths = [os.path.join(subfolder_path, fname) for fname in os.listdir(subfolder_path)[:nimg]]
 
