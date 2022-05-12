@@ -76,3 +76,21 @@ def file_tree(dir_path: Path, level: int=-1, limit_to_directories: bool=False,
     if next(iterator, None):
         print(f'... length_limit, {length_limit}, reached, counted:')
     print(f'\n{directories} directories' + (f', {files} files' if files else ''))
+
+
+
+def visualize_raw_images(folder, nrow=2, ncol=4):
+  
+  nimg = nrow * ncol
+  subfolder_names = os.listdir(folder)
+  for name in subfolder_names:
+    subfolder_path = os.path.join(folder, name)
+    img_paths = [os.path.join(subfolder_path, fname) for fname in os.listdir(subfolder_path)[:nimg]]
+
+    fig, axs = plt.subplots(nrow, ncol, figsize=(3*ncol, 3*nrow))    
+    fig.suptitle(f"{name.capitalize()} Pictures")
+    plt.grid(False)
+
+    for img_path, ax in zip(img_paths, axs.flat):
+        img = mpimg.imread(img_path)
+        ax.imshow(img)
