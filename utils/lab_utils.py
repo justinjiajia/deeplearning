@@ -1,7 +1,7 @@
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
+import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
@@ -10,7 +10,7 @@ from pathlib import Path
 from itertools import islice
 
 
-def visualize_feature_maps(model, data, indices, image_dim, layer_indices, filters_per_layer=10):
+def visualize_feature_maps(model, data, indices, image_dim, layer_indices, filters_per_layer=10, cmap='viridis'):
   
   layer_outputs = [layer.output for layer in model.layers]
   visualization_model = keras.models.Model(inputs = model.input, outputs = layer_outputs)
@@ -36,7 +36,7 @@ def visualize_feature_maps(model, data, indices, image_dim, layer_indices, filte
       plt.figure(figsize=(2 * filters_per_layer, 2))    
       plt.title(layer_name)
       plt.grid(False)
-      plt.imshow(display_grid, aspect="auto", cmap='viridis')
+      plt.imshow(display_grid, aspect="auto", cmap=cmap)
 
 
 
@@ -96,4 +96,4 @@ def visualize_raw_images(folder, nrow=2, ncol=4, limit=10):
 
     for img_path, ax in zip(img_paths, axs.flat):
         img = mpimg.imread(img_path)
-        ax.imshow(img)
+        ax.imshow(img, cmap='gray')
