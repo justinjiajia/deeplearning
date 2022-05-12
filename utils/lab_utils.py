@@ -38,7 +38,7 @@ def visualize_feature_maps(model, data, indices, image_dim, layer_indices, filte
 
 
 
-def tree(dir_path: Path, level: int=-1, limit_to_directories: bool=False,
+def file_tree(dir_path: Path, level: int=-1, limit_to_directories: bool=False,
          length_limit: int=1000):
     """Given a directory Path object print a visual tree structure"""
     
