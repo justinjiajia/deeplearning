@@ -10,6 +10,11 @@ from pathlib import Path
 from itertools import islice
 
 
+
+
+
+# Utilities for the CNN lab
+
 def visualize_feature_maps(model, data, indices, image_dim, layer_indices, filters_per_layer=10, cmap='viridis'):
   
   layer_outputs = [layer.output for layer in model.layers]
@@ -97,3 +102,22 @@ def visualize_raw_images(folder, nrow=2, ncol=4, limit=10):
     for img_path, ax in zip(img_paths, axs.flat):
         img = mpimg.imread(img_path)
         ax.imshow(img, cmap='gray')
+
+
+# Utilities for the RNN lab
+
+def create_sequences(data, timesteps):  
+  """
+  Transform an n-by-1 array to an (n-timestep+1)-by-timestep-by-1 array
+  data: an n-by-1 array
+  timesteps: an integer
+  """
+  features_sequences = [data[i-timesteps:i, 0] for i in range(timesteps, len(data))]
+  target_sequences = [data[i, 0] for i in range(timesteps, len(data))]
+
+  features_sequences = np.stack(features_sequences)[:, :, np.newaxis]
+  target_sequences = np.array(target_sequences)
+
+  return features_sequences, target_sequences
+
+
