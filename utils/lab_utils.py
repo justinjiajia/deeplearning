@@ -10,7 +10,49 @@ from pathlib import Path
 from itertools import islice
 
 
+class PrintLogAtFixedIntervalCallback(keras.callbacks.Callback):
+  
+  def __init__(self, interval=100):
+    super(PrintLogAtFixedIntervalCallback, self).__init__()
+    self.interval = interval
 
+  def on_epoch_end(self, epoch, logs):
+    if (epoch + 1) % self.interval == 0:                # epoch starts from 0
+      print("Epoch {}: loss: {} - accuracy: {:.3f}%".format(epoch + 1, logs["loss"], logs["accuracy"]))
+
+
+# Utilities for the DNN lab
+
+def show_images(images, num_row=2, num_col=5):
+    # plot images
+    fig, axes = plt.subplots(num_row, num_col, figsize=(2.5*num_col, 2.5*num_row))
+
+    # for i in range(num_row*num_col): another way to loop over axes
+        
+    for i, ax in enumerate(axes.reshape(-1)):
+
+        # ax = axes[i//num_col, i%num_col]   # if use the other loop header
+
+        ax.imshow(images[i], cmap='binary', vmin=0, vmax=1)
+        ax.xaxis.set_visible(False)
+        ax.yaxis.set_visible(False)
+
+    plt.tight_layout()
+    plt.show()
+
+
+def visualize_digit_image(img):
+
+    fig, ax = plt.subplots(1, 1, figsize = (12, 12)) 
+    ax.imshow(img, cmap="binary")
+    width, height = img.shape
+    thresh = img.max() / 2.5
+    for x in range(width):
+        for y in range(height):
+            ax.annotate(str(round(img[x][y],2)), xy=(y, x),
+                        horizontalalignment='center',
+                        verticalalignment='center',
+                        color='black' if img[x][y]<thresh else 'white')
 
 
 # Utilities for the CNN lab
@@ -106,18 +148,59 @@ def visualize_raw_images(folder, nrow=2, ncol=4, limit=10):
 
 # Utilities for the RNN lab
 
-def create_sequences(data, timesteps):  
+def generate_sequences(data, window_size):  
   """
-  Transform an n-by-1 array to an (n-timestep+1)-by-timestep-by-1 array
+  Transform an n-by-1 array to an (n-timestep)-by-timestep-by-k array
   data: an n-by-1 array
-  timesteps: an integer
+  window_size: an integer
   """
-  features_sequences = [data[i-timesteps:i, 0] for i in range(timesteps, len(data))]
-  target_sequences = [data[i, 0] for i in range(timesteps, len(data))]
+  features_sequences = [data[i-timesteps:i, 0] for i in range(window_size, len(data))]
+  target_sequences = [data[i, 0] for i in range(window_size, len(data))]
 
   features_sequences = np.stack(features_sequences)[:, :, np.newaxis]
   target_sequences = np.array(target_sequences)
 
   return features_sequences, target_sequences
 
+
+
+# Utilities for the 7th lab
+
+
+def generate_planar_dataset():
+    np.random.seed(1)
+    m = 400              # number of examples
+    N = int(m/2)         # number of points per class
+    D = 2                # dimensionality
+    X = np.zeros((m, D)) # data matrix where each row is a single example
+    Y = np.zeros((m, 1), dtype='uint8') # labels vector (0 for red, 1 for blue)
+    a = 4 # maximum ray of the flower
+
+    for j in range(2):
+        ix = range(N*j,N*(j+1))
+        t = np.linspace(j*3.12,(j+1)*3.12,N) + np.random.randn(N)*0.2   # theta
+        r = a * np.sin(4*t) + np.random.randn(N) * 0.2                  # radius
+        X[ix] = np.c_[r*np.sin(t), r*np.cos(t)]
+        Y[ix] = j
+        
+
+    return X, Y
+
+
+def plot_decision_boundary(model, X, y):
+    # Set min and max values and give it some padding
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    h = 0.01
+    # Generate a grid of points with distance h between them
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+    # Predict the function value for the whole grid
+    Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape) > 0.5
+
+    # Plot the contour and training examples
+    plt.contourf(xx, yy, Z, cmap=plt.cm.Spectral)
+    plt.ylabel('x2')
+    plt.xlabel('x1')
+    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.Spectral)
 
