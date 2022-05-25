@@ -135,7 +135,7 @@ def file_tree(dir_path: Path, level: int=-1, limit_to_directories: bool=False,
 
 
 
-def visualize_raw_images(folder, nrow=2, ncol=4, limit=10):
+def visualize_raw_images(folder, nrow=2, ncol=4, limit=10):   # change the name to visualize_labelled_images
   
   nimg = nrow * ncol
   subfolder_names = sorted(os.listdir(folder))
