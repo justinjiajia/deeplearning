@@ -147,7 +147,7 @@ def yolo_predict(yolo_model, anchors, class_names, image_file):
     Note: "None" actually represents the number of predicted boxes, it varies between 0 and max_boxes. 
     """
 
-    # Preprocess your image
+    # Preprocess your image; (608, 608) same as yolo_model input layer size
     image, image_data = preprocess_image("images/" + image_file, model_image_size = (608, 608))
     
     yolo_model_outputs = yolo_model(image_data) # It's output is of shape (m, 19, 19, 5, 85) 
