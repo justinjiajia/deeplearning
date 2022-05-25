@@ -1,14 +1,21 @@
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import imghdr
+import colorsys
+
+from PIL import Image, ImageDraw, ImageFont
 
 import numpy as np
+import random
+
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras import backend as K
 
 import os
 from pathlib import Path
 from itertools import islice
-
+from functools import reduce
 
 class PrintLogAtFixedIntervalCallback(keras.callbacks.Callback):
   
@@ -164,7 +171,7 @@ def generate_sequences(data, window_size):
 
 
 
-# Utilities for the 7th lab
+# Utilities for the lab on decision boundary
 
 
 def generate_planar_dataset():
@@ -203,4 +210,8 @@ def plot_decision_boundary(model, X, y):
     plt.ylabel('x2')
     plt.xlabel('x1')
     plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.Spectral)
+
+
+
+
 
