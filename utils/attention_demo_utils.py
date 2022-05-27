@@ -7,7 +7,7 @@ import re
 import numpy as np
 import os
 import time
-from sklearn.model_selection import train_test_split
+from matplotlib.font_manager import FontProperties
 
 
 def unicode_to_ascii(s):
@@ -262,7 +262,7 @@ def train_step(inp, targ, targ_lang, encoder, decoder, enc_hidden, optimizer, ba
     return batch_loss
 
 
-def evaluate(sentence, inp_tensor, inp_lang, targ_tensor, targ_lang, encoder, decoder):
+def evaluate(sentence, inp_tensor, inp_lang, targ_tensor, targ_lang, encoder, decoder, units):
     """Translate a sentence
     Args:
         sentence: the test sentence        
@@ -335,10 +335,10 @@ def plot_attention(attention, sentence, predicted_sentence):
     ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
     plt.show()
 
-def translate(sentence):
-    result, sentence, attention_plot = evaluate(sentence, input_tensor, inp_lang, target_tensor, targ_lang, encoder, decoder)
+def translate(sentence, input_tensor, inp_lang, target_tensor, targ_lang, encoder, decoder, units):
+    result, sentence, attention_plot = evaluate(sentence, input_tensor, inp_lang, target_tensor, targ_lang, encoder, decoder, units)
     print('Input: %s' % (sentence))
     print('Predicted translation: {}'.format(result))
 
-    attention_plot = attention_plot[:len(result.split(' ')), :len(sentence.split(' '))]
-    plot_attention(attention_plot, sentence.split(' '), result.split(' '))
+    # attention_plot = attention_plot[:len(result.split(' ')), :len(sentence.split(' '))]
+    # plot_attention(attention_plot, sentence.split(' '), result.split(' '))

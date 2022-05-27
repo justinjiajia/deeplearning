@@ -161,7 +161,7 @@ def generate_sequences(data, window_size):
   data: an n-by-1 array
   window_size: an integer
   """
-  features_sequences = [data[i-timesteps:i, 0] for i in range(window_size, len(data))]
+  features_sequences = [data[i-window_size:i, 0] for i in range(window_size, len(data))]
   target_sequences = [data[i, 0] for i in range(window_size, len(data))]
 
   features_sequences = np.stack(features_sequences)[:, :, np.newaxis]

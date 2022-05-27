@@ -137,7 +137,7 @@ def yolo_predict(yolo_model, anchors, class_names, image_file):
     Runs the graph to predict boxes for "image_file". Prints and plots the predictions.
     
     Arguments:
-    image_file -- name of an image stored in the "images" folder.
+    image_file -- path of the image file
     
     Returns:
     out_scores -- tensor of shape (None, ), scores of the predicted boxes
@@ -148,7 +148,7 @@ def yolo_predict(yolo_model, anchors, class_names, image_file):
     """
 
     # Preprocess your image; (608, 608) same as yolo_model input layer size
-    image, image_data = preprocess_image("images/" + image_file, model_image_size = (608, 608))
+    image, image_data = preprocess_image(image_file, model_image_size = (608, 608))
     
     yolo_model_outputs = yolo_model(image_data) # It's output is of shape (m, 19, 19, 5, 85) 
     # But yolo_eval takes input a tensor contains 4 tensors: box_xy,box_wh, box_confidence & box_class_probs
@@ -157,16 +157,18 @@ def yolo_predict(yolo_model, anchors, class_names, image_file):
     out_scores, out_boxes, out_classes = yolo_eval(yolo_outputs, [image.size[1],  image.size[0]], 10, 0.3, 0.5)
 
     # Print predictions info
-    print('Found {} boxes for {}'.format(len(out_boxes), "images/" + image_file))
+    print('Found {} boxes for {}'.format(len(out_boxes), image_file))
     # Generate colors for drawing bounding boxes.
     colors = get_colors_for_classes(len(class_names))
     # Draw bounding boxes on the image file
     # draw_boxes2(image, out_scores, out_boxes, out_classes, class_names, colors, image_shape)
     draw_boxes(image, out_boxes, out_classes, class_names, out_scores)
     # Save the predicted bounding box on the image
-    image.save(os.path.join("out", str(image_file).split('.')[0]+"_annotated." +str(image_file).split('.')[1] ), quality=100)
+    file_name = str(image_file).split('/')[-1]
+    output_file_name = file_name.split('.')[0]+"_annotated." + file_name.split('.')[-1]
+    image.save(os.path.join("out", output_file_name), quality=100)
     # Display the results in the notebook; create a directory named "out" to save annotated images
-    output_image = Image.open(os.path.join("out", str(image_file).split('.')[0]+"_annotated." +str(image_file).split('.')[1] ))    
+    output_image = Image.open(os.path.join("out", output_file_name))    
     imshow(output_image)
 
     return out_scores, out_boxes, out_classes
