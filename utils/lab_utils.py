@@ -7,6 +7,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 import numpy as np
 import random
+import h5py
 
 import tensorflow as tf
 from tensorflow import keras
@@ -25,7 +26,29 @@ class PrintLogAtFixedIntervalCallback(keras.callbacks.Callback):
 
   def on_epoch_end(self, epoch, logs):
     if (epoch + 1) % self.interval == 0:                # epoch starts from 0
-      print("Epoch {}: loss: {} - accuracy: {:.3f}%".format(epoch + 1, logs["loss"], logs["accuracy"]))
+      print(f'Epoch {epoch + 1}: loss: {logs["loss"]} - accuracy: {100*logs["accuracy"]:.1f}%',
+            f'- val_loss: {logs["val_loss"]} - val_accuracy: {100*logs["val_accuracy"]:.1f}%' if "val_loss" in logs else f"")
+
+
+
+
+# Utilities for the lab on neural networks
+
+def load_catvnoncat_data():
+    train_dataset = h5py.File('datasets/train_catvnoncat.h5', "r")
+    train_set_x_orig = np.array(train_dataset["train_set_x"][:]) # your train set features
+    train_set_y_orig = np.array(train_dataset["train_set_y"][:]) # your train set labels
+
+    test_dataset = h5py.File('datasets/test_catvnoncat.h5', "r")
+    test_set_x_orig = np.array(test_dataset["test_set_x"][:]) # your test set features
+    test_set_y_orig = np.array(test_dataset["test_set_y"][:]) # your test set labels
+
+    classes = np.array(test_dataset["list_classes"][:]) # the list of classes
+    
+    train_set_y_orig = train_set_y_orig.reshape((1, train_set_y_orig.shape[0]))
+    test_set_y_orig = test_set_y_orig.reshape((1, test_set_y_orig.shape[0]))
+    
+    return train_set_x_orig, train_set_y_orig, test_set_x_orig, test_set_y_orig, classes
 
 
 # Utilities for the DNN lab
@@ -36,7 +59,7 @@ def show_images(images, num_row=2, num_col=5):
 
     # for i in range(num_row*num_col): another way to loop over axes
         
-    for i, ax in enumerate(axes.reshape(-1)):
+    for i, ax in enumerate(axes.flat):
 
         # ax = axes[i//num_col, i%num_col]   # if use the other loop header
 
@@ -171,11 +194,14 @@ def generate_sequences(data, window_size):
 
 
 
+
+
+
 # Utilities for the lab on decision boundary
 
 
-def generate_planar_dataset():
-    np.random.seed(1)
+def generate_planar_dataset(seed=1):
+    np.random.seed(seed)
     m = 400              # number of examples
     N = int(m/2)         # number of points per class
     D = 2                # dimensionality
@@ -206,7 +232,7 @@ def plot_decision_boundary(model, X, y):
     Z = Z.reshape(xx.shape) > 0.5
 
     # Plot the contour and training examples
-    plt.contourf(xx, yy, Z, cmap=plt.cm.Spectral)
+    plt.contourf(xx, yy, Z, alpha=0.4, cmap=plt.cm.Spectral)
     plt.ylabel('x2')
     plt.xlabel('x1')
     plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.Spectral)
